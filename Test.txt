@@ -1,0 +1,133 @@
+import re, sys, PIL  # Replace replace method
+
+users = {}
+userDir = {}
+
+username = input("Create Username: ")
+
+while True:
+	userDir[username] = []
+	if username == "SKIP":
+		users["SKIP"] = "password"
+		break
+	password = input("Create password: ")
+	if input("Re-enter password: ") == password:
+		users[username] = password
+		break
+	else:
+		print("Passwords do not match")
+		
+# Password strength tester? wl
+
+helpText = "To code in Python, start input with >>> (no space afterwards, all other inputs add spaces between first and second words)\nTo write a file, input w FILENAME(/OPTIONALFOLDER)\nTo read a file input r FILENAME\nTo view the folder directory, input dir\nTo create a folder, input folder FOLDERNAME\nTo log out, input logout\nTo shutdown, input exit\nTo view this message again, input h\nUppercase Words are the n ames you can input"
+equalsBorder = "=" * 38
+def printEqBor():  # Maybe use a wrapping function instead?
+	print(equalsBorder)
+
+
+printEqBor()
+print("[Loading Music] Welcome to ThanOS\n(Text Hypervisor And Notepad OS)")  # ThanOS snap() (Half of all users except main are deleted) PyThanOS FootLettOS OofOS
+print(helpText)
+printEqBor()
+
+while True:
+	textIn = input()
+
+	if textIn.startswith(">>>"):
+		codeIn = textIn.replace(">>>", "")
+		while codeIn.endswith(":"):
+			print("...", end = "")
+			codeIn = codeIn + "\n" + input()
+			
+		# print(codeIn)
+		try:
+			exec(codeIn)
+		except Exception as exc:
+			print(exc)
+
+	elif textIn.lower().startswith("w"):
+		pattern = r"([^/]+)/?([^/]+)?"  # r"[^/]+(/[^/]+)*"
+		fileNameLocation = textIn.replace("w ", "") # + ".txt"
+		match = re.match(pattern, fileNameLocation)
+		if match:
+			fileName = match.group(1)
+			try:
+				if match.group(2) in userDir[username][0].keys():
+					userDir[username][0][match.group(2)].append(fileName)
+					with open(fileName, "w") as f:
+						f.write(input("Write text here: "))
+				else:
+					print("Folder not found")
+			except IndexError:
+				userDir[username].append(fileName)
+				with open(fileName, "w") as f:
+					f.write(input("Write text here: "))
+		else:
+			print("Invalid File Name")
+
+	elif textIn.lower().startswith("r"):
+		fileName = textIn.replace("r ", "")
+		try:
+			with open(fileName, "r") as f:
+				print(f.read())
+		except FileNotFoundError:
+			print("File not found")
+
+	elif textIn.lower().startswith("dir"):  # Directory
+		print(userDir[username])
+
+	elif textIn.lower().startswith("folder"):
+		folderName = textIn.replace("folder ", "")
+		if userDir[username] == [] or type(userDir[username][0]) != dict:
+			userDir[username].insert(0, {})
+		userDir[username][0][folderName] = []
+		"""
+		for obj in userDir[username]:
+			if type(obj) == dict:
+				if folderName in obj.keys():
+					obj[folderName] = []
+		"""
+
+	elif textIn.lower().startswith("adduser"):
+		newUsername = textIn.replace("adduser ", "")
+		userDir[newUsername] = []
+		while True:
+			newPassword = input("Create password: ")
+			if input("Re-enter password: ") == newPassword:
+				users[newUsername] = newPassword
+				break
+			else:
+				print("Passwords do not match")
+	
+	elif textIn.upper().replace(" ", "") == "LOGOUT":
+		while True:
+			loginUsername = input("Enter Username: ")
+			loginPassword = input("Enter Password: ")
+			if users[loginUsername] == loginPassword:
+				username = loginUsername
+				password = loginPassword
+			else:
+				print("Incorrect Username/Password Combination")
+
+	elif textIn.upper().replace(" ", "") == "H":
+		printEqBor()
+		print(helpText)
+		printEqBor()
+	elif textIn.upper().replace(" ", "") == "FILEMODES":
+		image = PIL.Image.open('File.jpg')
+		image.show()
+	elif textIn.upper().replace(" ", "") == "EXIT":
+		sys.exit(0)
+	else:
+		print("Invalid input")
+
+	"""
+	elif textIn.lower().startswith("del"):
+		obj = textIn.replace("del ", "")
+		try:
+			del obj
+			if obj in globals():
+				pass
+		except:
+			raise
+	"""
